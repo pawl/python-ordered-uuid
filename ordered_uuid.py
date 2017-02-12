@@ -34,7 +34,10 @@ class OrderedUUID(UUID):
 
             int = int_(hex, 16)
         if bytes_le is not None:
-            raise NotImplementedError
+            if len(bytes_le) != 16:
+                raise ValueError('bytes_le is not a 16-char string')
+            bytes = (bytes_le[4-1::-1] + bytes_le[6-1:4-1:-1] +
+                     bytes_le[8-1:6-1:-1] + bytes_le[8:])
         if bytes is not None:
             if len(bytes) != 16:
                 raise ValueError('bytes is not a 16-char string')
@@ -67,3 +70,7 @@ if __name__ == "__main__":
 
     result = OrderedUUID(bytes=b'\xcd\xef\x89\xab\x01\x23\x45\x67\x01\x23\x45\x67\x89\xab\xcd\xef')
     assert str(result) == '01234567-89ab-cdef-0123-456789abcdef'
+
+    result = OrderedUUID(bytes_le=b'\x78\x56\x34\x12\x34\x12\x78\x56' +
+                                  b'\x12\x34\x56\x78\x12\x34\x56\x78')
+    assert str(result) == '12345678-5678-1234-1234-567812345678'
