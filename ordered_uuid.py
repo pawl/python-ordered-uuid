@@ -1,6 +1,15 @@
+import sys
 from uuid import UUID
 
 int_ = int      # The built-in int type
+bytes_ = bytes  # The built-in bytes type
+
+if sys.version_info[0] > 2:
+    def from_bytes(bytes):
+        return int_.from_bytes(bytes, byteorder='big')
+else:
+    def from_bytes(bytes):
+        return long(('%02x'*16) % tuple(map(ord, bytes)), 16)
 
 
 class OrderedUUID(UUID):
@@ -27,7 +36,14 @@ class OrderedUUID(UUID):
         if bytes_le is not None:
             raise NotImplementedError
         if bytes is not None:
-            raise NotImplementedError
+            if len(bytes) != 16:
+                raise ValueError('bytes is not a 16-char string')
+            assert isinstance(bytes, bytes_), repr(bytes)
+
+            # reorder bytes to form ordered uuid
+            bytes = bytes[4:8] + bytes[2:4] + bytes[:2] + bytes[8:]
+
+            int = from_bytes(bytes)
         if fields is not None:
             raise NotImplementedError
         if int is not None:
@@ -47,4 +63,7 @@ class OrderedUUID(UUID):
 
 if __name__ == "__main__":
     result = OrderedUUID('cdef89ab012345670123456789abcdef')
+    assert str(result) == '01234567-89ab-cdef-0123-456789abcdef'
+
+    result = OrderedUUID(bytes=b'\xcd\xef\x89\xab\x01\x23\x45\x67\x01\x23\x45\x67\x89\xab\xcd\xef')
     assert str(result) == '01234567-89ab-cdef-0123-456789abcdef'
