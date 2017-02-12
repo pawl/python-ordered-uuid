@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='python-ordered-uuid',
-    version='1.1.1',
+    version='1.2.0',
     description='A python implementation of Ordered UUID.',
     url='https://github.com/pawl/python-ordered-uuid',
     author='Paul Brown',
