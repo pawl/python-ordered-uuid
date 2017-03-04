@@ -48,7 +48,25 @@ class OrderedUUID(UUID):
 
             int = from_bytes(bytes)
         if fields is not None:
-            raise NotImplementedError
+            if len(fields) != 6:
+                raise ValueError('fields is not a 6-tuple')
+            (time_low, time_mid, time_hi_version,
+             clock_seq_hi_variant, clock_seq_low, node) = fields
+            if not 0 <= time_low < 1<<32:
+                raise ValueError('field 1 out of range (need a 32-bit value)')
+            if not 0 <= time_mid < 1<<16:
+                raise ValueError('field 2 out of range (need a 16-bit value)')
+            if not 0 <= time_hi_version < 1<<16:
+                raise ValueError('field 3 out of range (need a 16-bit value)')
+            if not 0 <= clock_seq_hi_variant < 1<<8:
+                raise ValueError('field 4 out of range (need an 8-bit value)')
+            if not 0 <= clock_seq_low < 1<<8:
+                raise ValueError('field 5 out of range (need an 8-bit value)')
+            if not 0 <= node < 1<<48:
+                raise ValueError('field 6 out of range (need a 48-bit value)')
+            clock_seq = (clock_seq_hi_variant << 8) | clock_seq_low
+            int = ((time_low << 96) | (time_mid << 64) |
+                   (time_hi_version << 80) | (clock_seq << 48) | node)
         if int is not None:
             if not 0 <= int < 1<<128:
                 raise ValueError('int is out of range (need a 128-bit value)')
@@ -68,9 +86,13 @@ if __name__ == "__main__":
     result = OrderedUUID('cdef89ab012345670123456789abcdef')
     assert str(result) == '01234567-89ab-cdef-0123-456789abcdef'
 
-    result = OrderedUUID(bytes=b'\xcd\xef\x89\xab\x01\x23\x45\x67\x01\x23\x45\x67\x89\xab\xcd\xef')
+    result = OrderedUUID(bytes=b'\xcd\xef\x89\xab\x01\x23\x45\x67' +
+                               b'\x01\x23\x45\x67\x89\xab\xcd\xef')
     assert str(result) == '01234567-89ab-cdef-0123-456789abcdef'
 
     result = OrderedUUID(bytes_le=b'\x78\x56\x34\x12\x34\x12\x78\x56' +
                                   b'\x12\x34\x56\x78\x12\x34\x56\x78')
+    assert str(result) == '12345678-5678-1234-1234-567812345678'
+
+    result = OrderedUUID(fields=(0x12345678, 0x1234, 0x5678, 0x12, 0x34, 0x567812345678))
     assert str(result) == '12345678-5678-1234-1234-567812345678'
