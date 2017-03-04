@@ -8,7 +8,7 @@ except ImportError:
 
 setup(
     name='python-ordered-uuid',
-    version='1.3.1',
+    version='1.3.2',
     description='A python implementation of Ordered UUID.',
     url='https://github.com/pawl/python-ordered-uuid',
     author='Paul Brown',
