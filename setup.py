@@ -1,14 +1,15 @@
 from setuptools import setup
 
 try:
+    # only build rst docs for pypi when pypandoc is installed (when deploying)
     import pypandoc
     long_description = pypandoc.convert('README.md', 'rst')
 except ImportError:
-    long_description = open('README.md').read()
+    long_description = ''
 
 setup(
     name='python-ordered-uuid',
-    version='1.3.3',
+    version='1.3.4',
     description='A python implementation of Ordered UUID.',
     url='https://github.com/pawl/python-ordered-uuid',
     author='Paul Brown',
