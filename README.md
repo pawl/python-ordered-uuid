@@ -4,6 +4,8 @@ Overrides Python's UUID class to implement "Ordered UUID".
 
 For more info about "Ordered UUID" see: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/
 
+Supports both Python 2 & 3.
+
 
 Usage
 =====

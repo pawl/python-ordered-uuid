@@ -15,4 +15,8 @@ setup(
     author_email='paul90brown+pypi@gmail.com',
     long_description=long_description,
     py_modules=['ordered_uuid'],
+    classifiers=[
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
+    ]
 )
